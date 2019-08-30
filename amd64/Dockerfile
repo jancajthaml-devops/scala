@@ -22,17 +22,20 @@ ENV LC_ALL C
 ENV DEBIAN_FRONTEND noninteractive
 ENV APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=no
 ENV JAVA_HOME /usr/local/openjdk-8
-ENV GRAAL_VERSION 19.2.0
-ENV GRAAL_HOME /opt/graalvm-ce-${GRAAL_VERSION}
-ENV PATH $JAVA_HOME/bin:$PATH
 ENV JAVA_VERSION 8u212b04
 ENV JAVA_DIST_VERSION openjdk-8u212-b04
+ENV GRAALVM_VERSION 19.2.0
 ENV SCALA_VERSION 2.13.0
 ENV SBT_VERSION 1.2.8
 ENV LIBRARY_PATH /usr/lib
 ENV LD_LIBRARY_PATH /usr/lib
 ENV CC gcc
 ENV CXX g++
+ENV BASHRC /root/.bashrc
+ENV SCALA_HOME /root/scala-${SCALA_VERSION}
+ENV GRAALVM_HOME /root/graalvm-${GRAALVM_VERSION}
+ENV SBT_HOME /root/sbt-${SBT_VERSION}
+ENV PATH=${JAVA_HOME}/bin:${SCALA_HOME}/bin:${GRAALVM_HOME}/bin:${SBT_HOME}/bin:${PATH}
 
 RUN apt-get update && \
     \
@@ -77,24 +80,18 @@ RUN apt-get update && \
     rm -rf /tmp/${JAVA_DIST_VERSION} && \
     \
     echo "installing scala ${SCALA_VERSION}" && \
-    curl -fsL "https://downloads.typesafe.com/scala/${SCALA_VERSION}/scala-${SCALA_VERSION}.tgz" | tar xfz - -C /root/ && \
-      echo >> /root/.bashrc && \
-      echo "export PATH=~/scala-${SCALA_VERSION}/bin:${PATH}" >> /root/.bashrc && \
+    mkdir ${SCALA_HOME} && \
+    curl -fsL "https://downloads.typesafe.com/scala/${SCALA_VERSION}/scala-${SCALA_VERSION}.tgz" | tar xfz - -C ${SCALA_HOME} --strip-components=1 && \
     \
     echo "installing sbt ${SBT_VERSION}" && \
-    curl -fsL "https://dl.bintray.com/sbt/debian/sbt-${SBT_VERSION}.deb" -o /tmp/sbt-${SBT_VERSION}.deb && \
-      dpkg -i /tmp/sbt-${SBT_VERSION}.deb && \
-      rm -f /tmp/sbt-${SBT_VERSION}.deb && \
-      sbt sbtVersion && \
-      echo "export PATH=/root/scala-${SCALA_VERSION}/bin:${PATH}" >> /root/.bashrc && \
+    mkdir ${SBT_HOME} && \
+    curl -fsL "https://sbt-downloads.cdnedge.bluemix.net/releases/v${SBT_VERSION}/sbt-$SBT_VERSION.tgz" | tar xfz - -C ${SBT_HOME} --strip-components=1 && \
     \
-    echo "installing grallVM ${GRAAL_VERSION}" && \
-    curl -fsL "https://github.com/oracle/graal/releases/download/vm-${GRAAL_VERSION}/graalvm-ce-linux-amd64-${GRAAL_VERSION}.tar.gz" | tar xfz - -C /opt && \
+    echo "installing grallVM ${GRAALVM_VERSION}" && \
+    mkdir ${GRAALVM_HOME} && \
+    curl -fsL "https://github.com/oracle/graal/releases/download/vm-${GRAALVM_VERSION}/graalvm-ce-linux-amd64-${GRAALVM_VERSION}.tar.gz" | tar -xvzf - -C ${GRAALVM_HOME} --strip-components=1 && \
     \
     rm -rf /var/lib/apt/lists/* /tmp/*
-
-ENV JAVA_HOME=${GRAAL_HOME}
-ENV PATH=${PATH}:${JAVA_HOME}/bin
 
 COPY --from=jancajthaml/jq /usr/local/bin/jq /usr/bin/jq
 COPY --from=library/docker:18.06 /usr/local/bin/docker /usr/bin/docker
