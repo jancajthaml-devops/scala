@@ -23,7 +23,7 @@ ENV DEBIAN_FRONTEND noninteractive
 ENV APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=no
 ENV JAVA_HOME /usr/local/openjdk-8
 ENV GRAAL_VERSION 19.2.0
-ENV GRAAL_HOME=/opt/graalvm-ce-${GRAAL_VERSION}
+ENV GRAAL_HOME /opt/graalvm-ce-${GRAAL_VERSION}
 ENV PATH $JAVA_HOME/bin:$PATH
 ENV JAVA_VERSION 8u212b04
 ENV JAVA_DIST_VERSION openjdk-8u212-b04
@@ -76,9 +76,6 @@ RUN apt-get update && \
     mv /tmp/${JAVA_DIST_VERSION}/* ${JAVA_HOME}/ && \
     rm -rf /tmp/${JAVA_DIST_VERSION} && \
     \
-    echo "installing grallVM ${GRAAL_VERSION}" && \
-    curl -fsL "https://github.com/oracle/graal/releases/download/vm-${GRAAL_VERSION}/graalvm-ce-linux-amd64-${GRAAL_VERSION}.tar.gz" | tar xfz - -C /opt && \
-    \
     echo "installing scala ${SCALA_VERSION}" && \
     curl -fsL "https://downloads.typesafe.com/scala/${SCALA_VERSION}/scala-${SCALA_VERSION}.tgz" | tar xfz - -C /root/ && \
       echo >> /root/.bashrc && \
@@ -91,7 +88,13 @@ RUN apt-get update && \
       sbt sbtVersion && \
       echo "export PATH=/root/scala-${SCALA_VERSION}/bin:${PATH}" >> /root/.bashrc && \
     \
+    echo "installing grallVM ${GRAAL_VERSION}" && \
+    curl -fsL "https://github.com/oracle/graal/releases/download/vm-${GRAAL_VERSION}/graalvm-ce-linux-amd64-${GRAAL_VERSION}.tar.gz" | tar xfz - -C /opt && \
+    \
     rm -rf /var/lib/apt/lists/* /tmp/*
+
+ENV JAVA_HOME=${GRAAL_HOME}
+ENV PATH=${PATH}:${JAVA_HOME}/bin
 
 COPY --from=jancajthaml/jq /usr/local/bin/jq /usr/bin/jq
 COPY --from=library/docker:18.06 /usr/local/bin/docker /usr/bin/docker
