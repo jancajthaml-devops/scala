@@ -93,5 +93,11 @@ RUN apt-get update && \
     \
     rm -rf /var/lib/apt/lists/* /tmp/*
 
+COPY sample /tmp/sample
+
+RUN cd /tmp/sample && \
+    sbt +test:update && \
+    rm -rf /tmp/sample
+
 COPY --from=jancajthaml/jq /usr/local/bin/jq /usr/bin/jq
 COPY --from=library/docker:18.06 /usr/local/bin/docker /usr/bin/docker
