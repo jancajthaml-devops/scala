@@ -23,7 +23,7 @@ ENV DEBIAN_FRONTEND noninteractive
 ENV APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=no
 ENV JAVA_HOME /usr/local/openjdk-11
 ENV JAVA_VERSION 11.0.7_10
-ENV JAVA_DIST_VERSION openjdk-11
+ENV JAVA_DIST_VERSION openjdk-11.0.7+10
 ENV GRAALVM_VERSION 19.2.0
 ENV SCALA_VERSION 2.13.1
 ENV SBT_VERSION 1.2.8
@@ -75,8 +75,7 @@ RUN apt-get update && \
     \
     echo "installing openjdk ${JAVA_VERSION}" && \
     mkdir -p ${JAVA_HOME} && \
-    curl -fsL "https://github.com/AdoptOpenJDK/openjdk11-upstream-binaries/releases/download/jdk8u212-b04/OpenJDK8U-x64_linux_${JAVA_VERSION}.tar.gz" | tar xfz - -C /tmp && \
-    ls -la /tmp/ && \
+    curl -fsL "https://github.com/AdoptOpenJDK/openjdk11-upstream-binaries/releases/download/jdk-11.0.7+10/OpenJDK11U-jdk_x64_linux_${JAVA_VERSION}.tar.gz" | tar xfz - -C /tmp && \
     mv /tmp/${JAVA_DIST_VERSION}/* ${JAVA_HOME}/ && \
     rm -rf /tmp/${JAVA_DIST_VERSION} && \
     \
