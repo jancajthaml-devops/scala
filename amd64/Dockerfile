@@ -14,18 +14,18 @@
 
 # ---------------------------------------------------------------------------- #
 
-FROM amd64/debian:stretch-slim
+FROM amd64/debian:buster-slim
 
 ENV container docker
 ENV LANG C.UTF-8
 ENV LC_ALL C
 ENV DEBIAN_FRONTEND noninteractive
 ENV APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=no
-ENV JAVA_HOME /usr/local/openjdk-8
-ENV JAVA_VERSION 8u212b04
-ENV JAVA_DIST_VERSION openjdk-8u212-b04
+ENV JAVA_HOME /usr/local/openjdk-11
+ENV JAVA_VERSION 11.0.7_10
+ENV JAVA_DIST_VERSION openjdk-11
 ENV GRAALVM_VERSION 19.2.0
-ENV SCALA_VERSION 2.12.8
+ENV SCALA_VERSION 2.13.1
 ENV SBT_VERSION 1.2.8
 ENV LIBRARY_PATH /usr/lib
 ENV LD_LIBRARY_PATH /usr/lib
@@ -75,7 +75,8 @@ RUN apt-get update && \
     \
     echo "installing openjdk ${JAVA_VERSION}" && \
     mkdir -p ${JAVA_HOME} && \
-    curl -fsL "https://github.com/AdoptOpenJDK/openjdk8-upstream-binaries/releases/download/jdk8u212-b04/OpenJDK8U-x64_linux_${JAVA_VERSION}.tar.gz" | tar xfz - -C /tmp && \
+    curl -fsL "https://github.com/AdoptOpenJDK/openjdk11-upstream-binaries/releases/download/jdk8u212-b04/OpenJDK8U-x64_linux_${JAVA_VERSION}.tar.gz" | tar xfz - -C /tmp && \
+    ls -la /tmp/ && \
     mv /tmp/${JAVA_DIST_VERSION}/* ${JAVA_HOME}/ && \
     rm -rf /tmp/${JAVA_DIST_VERSION} && \
     \
