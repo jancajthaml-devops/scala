@@ -51,8 +51,7 @@ RUN apt-get update && \
       git \
       grc \
       tar \
-      cmake \
-      make \
+      build-essential \
       patch \
       python \
       debhelper \
@@ -63,8 +62,6 @@ RUN apt-get update && \
       pkg-config \
       lintian \
       libsystemd-dev \
-      gcc \
-      g++ \
       libc6 \
       libc6-dev \
       \
