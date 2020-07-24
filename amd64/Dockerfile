@@ -25,7 +25,7 @@ ENV JAVA_HOME /usr/local/openjdk-11
 ENV JAVA_VERSION 11.0.7_10
 ENV JAVA_DIST_VERSION openjdk-11.0.7+10
 ENV GRAALVM_VERSION 20.1.0
-ENV SCALA_VERSION 2.13.1
+ENV SCALA_VERSION 2.12.8
 ENV SBT_VERSION 1.2.8
 ENV LIBRARY_PATH /usr/lib
 ENV LD_LIBRARY_PATH /usr/lib
@@ -92,7 +92,7 @@ RUN apt-get update && \
 
 COPY sample /tmp/sample
 
-RUN cd /tmp/sample/sbt-1.0 && \
+RUN cd /tmp/sample && \
     sbt +test:update && \
     sbt compile && \
     rm -rf /tmp/sample
