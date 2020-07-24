@@ -1,5 +1,1 @@
-crossScalaVersions := Seq(
-  "2.12.8"
-)
-
-scalaVersion := crossScalaVersions.value.head
+scalaVersion := sys.env.get("SCALA_VERSION").get

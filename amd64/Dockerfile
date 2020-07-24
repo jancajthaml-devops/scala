@@ -20,11 +20,11 @@ ENV container docker
 ENV LANG C.UTF-8
 ENV LC_ALL C
 ENV DEBIAN_FRONTEND noninteractive
-ENV APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=no
+ENV APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE no
 ENV JAVA_HOME /usr/local/openjdk-11
 ENV JAVA_VERSION 11.0.7_10
 ENV JAVA_DIST_VERSION openjdk-11.0.7+10
-ENV GRAALVM_VERSION 19.2.0
+ENV GRAALVM_VERSION 20.1.0
 ENV SCALA_VERSION 2.13.1
 ENV SBT_VERSION 1.2.8
 ENV LIBRARY_PATH /usr/lib
@@ -42,7 +42,7 @@ RUN apt-get update && \
     echo "installing essentials" && \
     apt-get install -y --no-install-recommends \
       apt-utils \
-      curl \
+      wget \
       ca-certificates \
       && \
     \
@@ -70,23 +70,23 @@ RUN apt-get update && \
       \
       && \
     \
-    echo "installing openjdk ${JAVA_VERSION}" && \
+    echo "installing openjdk ${JAVA_DIST_VERSION}" && \
     mkdir -p ${JAVA_HOME} && \
-    curl -fsL "https://github.com/AdoptOpenJDK/openjdk11-upstream-binaries/releases/download/jdk-11.0.7+10/OpenJDK11U-jdk_x64_linux_${JAVA_VERSION}.tar.gz" | tar xfz - -C /tmp && \
+    wget -O - -o /dev/null "https://github.com/AdoptOpenJDK/openjdk11-upstream-binaries/releases/download/jdk-11.0.7+10/OpenJDK11U-jdk_x64_linux_${JAVA_VERSION}.tar.gz" | tar xfz - -C /tmp && \
     mv /tmp/${JAVA_DIST_VERSION}/* ${JAVA_HOME}/ && \
     rm -rf /tmp/${JAVA_DIST_VERSION} && \
     \
     echo "installing scala ${SCALA_VERSION}" && \
     mkdir ${SCALA_HOME} && \
-    curl -fsL "https://downloads.typesafe.com/scala/${SCALA_VERSION}/scala-${SCALA_VERSION}.tgz" | tar xfz - -C ${SCALA_HOME} --strip-components=1 && \
+    wget -O - -o /dev/null "https://downloads.typesafe.com/scala/${SCALA_VERSION}/scala-${SCALA_VERSION}.tgz" | tar xfz - -C ${SCALA_HOME} --strip-components=1 && \
     \
     echo "installing sbt ${SBT_VERSION}" && \
     mkdir ${SBT_HOME} && \
-    curl -fsL "https://sbt-downloads.cdnedge.bluemix.net/releases/v${SBT_VERSION}/sbt-$SBT_VERSION.tgz" | tar xfz - -C ${SBT_HOME} --strip-components=1 && \
+    wget -O - -o /dev/null "https://sbt-downloads.cdnedge.bluemix.net/releases/v${SBT_VERSION}/sbt-${SBT_VERSION}.tgz" | tar xfz - -C ${SBT_HOME} --strip-components=1 && \
     \
     echo "installing grallVM ${GRAALVM_VERSION}" && \
     mkdir ${GRAALVM_HOME} && \
-    curl -fsL "https://github.com/oracle/graal/releases/download/vm-${GRAALVM_VERSION}/graalvm-ce-linux-amd64-${GRAALVM_VERSION}.tar.gz" | tar -xvzf - -C ${GRAALVM_HOME} --strip-components=1 && \
+    wget -O - -o /dev/null "https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-${GRAALVM_VERSION}/graalvm-ce-java11-linux-amd64-${GRAALVM_VERSION}.tar.gz" | tar -xvzf - -C ${GRAALVM_HOME} --strip-components=1 && \
     \
     rm -rf /var/lib/apt/lists/* /tmp/*
 
