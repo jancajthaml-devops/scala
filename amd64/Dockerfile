@@ -92,9 +92,12 @@ RUN apt-get update && \
 
 COPY sample /tmp/sample
 
-RUN cd /tmp/sample && \
+RUN cd /tmp/sample/sbt-1.0 && \
     sbt +test:update && \
+    sbt compile && \
     rm -rf /tmp/sample
 
 COPY --from=jancajthaml/jq /usr/local/bin/jq /usr/bin/jq
 COPY --from=library/docker:18.06 /usr/local/bin/docker /usr/bin/docker
+
+ENTRYPOINT [ "sbt", "-batch", "--no-color", "-J-Xmx2G", "-JXX:MaxMetaSpaceSize=512M" ]
