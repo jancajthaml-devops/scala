@@ -24,7 +24,6 @@ ENV APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE no
 ENV JAVA_HOME /usr/local/openjdk-11
 ENV JAVA_VERSION 11.0.7_10
 ENV JAVA_DIST_VERSION openjdk-11.0.7+10
-ENV GRAALVM_VERSION 20.1.0
 ENV SCALA_VERSION 2.13.1
 ENV SBT_VERSION 1.2.8
 ENV LIBRARY_PATH /usr/lib
@@ -33,71 +32,50 @@ ENV CC gcc
 ENV CXX g++
 ENV BASHRC /root/.bashrc
 ENV SCALA_HOME /root/scala-${SCALA_VERSION}
-ENV GRAALVM_HOME /root/graalvm-${GRAALVM_VERSION}
 ENV SBT_HOME /root/sbt-${SBT_VERSION}
-ENV PATH=${JAVA_HOME}/bin:${SCALA_HOME}/bin:${GRAALVM_HOME}/bin:${SBT_HOME}/bin:${PATH}
+ENV PATH="${JAVA_HOME}/bin:${SCALA_HOME}/bin:${SBT_HOME}/bin:${PATH}"
 
-RUN apt-get update && \
-    \
-    echo "installing essentials" && \
-    apt-get install -y --no-install-recommends \
-      apt-utils \
-      wget \
-      ca-certificates \
-      && \
-    \
+RUN \
     echo "installing debian packages" && \
+    apt-get update && \
     apt-get -y install --no-install-recommends \
-      git \
+      ca-certificates \
+      wget \
       grc \
       tar \
-      build-essential \
-      patch \
-      python \
-      debhelper \
-      fontconfig \
-      libfreetype6 \
-      config-package-dev \
-      fakeroot \
-      pkg-config \
-      lintian \
-      libsystemd-dev \
       libc6 \
       libc6-dev \
       \
       libzmq5>=4.2.1~ \
-      libzmq3-dev>=4.2.1~ \
-      \
-      && \
+      libzmq3-dev>=4.2.1~ && \
     \
+    apt-get clean autoclean && \
+    apt-get autoremove --yes && \
+    rm -rf /var/lib/{apt,dpkg,cache,log}/ && \
+    :
+
+RUN \
     echo "installing openjdk ${JAVA_DIST_VERSION}" && \
     mkdir -p ${JAVA_HOME} && \
     wget -O - -o /dev/null "https://github.com/AdoptOpenJDK/openjdk11-upstream-binaries/releases/download/jdk-11.0.7+10/OpenJDK11U-jdk_x64_linux_${JAVA_VERSION}.tar.gz" | tar xfz - -C /tmp && \
     mv /tmp/${JAVA_DIST_VERSION}/* ${JAVA_HOME}/ && \
-    rm -rf /tmp/${JAVA_DIST_VERSION} && \
+    rm -rf /tmp/* && \
     \
     echo "installing scala ${SCALA_VERSION}" && \
-    mkdir ${SCALA_HOME} && \
-    wget -O - -o /dev/null "https://downloads.typesafe.com/scala/${SCALA_VERSION}/scala-${SCALA_VERSION}.tgz" | tar xfz - -C ${SCALA_HOME} --strip-components=1 && \
+    mkdir "${SCALA_HOME}" && \
+    wget -O - -o /dev/null "https://downloads.typesafe.com/scala/${SCALA_VERSION}/scala-${SCALA_VERSION}.tgz" | tar xfz - -C "${SCALA_HOME}" --strip-components=1 && \
     \
     echo "installing sbt ${SBT_VERSION}" && \
-    mkdir ${SBT_HOME} && \
-    wget -O - -o /dev/null "https://sbt-downloads.cdnedge.bluemix.net/releases/v${SBT_VERSION}/sbt-${SBT_VERSION}.tgz" | tar xfz - -C ${SBT_HOME} --strip-components=1 && \
-    \
-    echo "installing grallVM ${GRAALVM_VERSION}" && \
-    mkdir ${GRAALVM_HOME} && \
-    wget -O - -o /dev/null "https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-${GRAALVM_VERSION}/graalvm-ce-java11-linux-amd64-${GRAALVM_VERSION}.tar.gz" | tar -xvzf - -C ${GRAALVM_HOME} --strip-components=1 && \
-    \
-    rm -rf /var/lib/apt/lists/* /tmp/*
+    mkdir "${SBT_HOME}" && \
+    wget -O - -o /dev/null "https://sbt-downloads.cdnedge.bluemix.net/releases/v${SBT_VERSION}/sbt-${SBT_VERSION}.tgz" | tar xfz - -C "${SBT_HOME}" --strip-components=1 && \
+    :
 
 COPY sample /tmp/sample
 
-RUN cd /tmp/sample && \
+RUN echo "compiling sample project" && \
+    cd /tmp/sample && \
     sbt +test:update && \
     sbt compile && \
     rm -rf /tmp/sample
-
-COPY --from=jancajthaml/jq /usr/local/bin/jq /usr/bin/jq
-COPY --from=library/docker:18.06 /usr/local/bin/docker /usr/bin/docker
 
 ENTRYPOINT [ "sbt", "-batch", "--no-color", "-J-Xmx2G", "-JXX:MaxMetaSpaceSize=512M" ]
