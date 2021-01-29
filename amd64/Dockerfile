@@ -22,10 +22,10 @@ ENV LC_ALL C
 ENV DEBIAN_FRONTEND noninteractive
 ENV APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE no
 ENV JAVA_HOME /usr/local/openjdk-11
-ENV JAVA_VERSION 11.0.7_10
-ENV JAVA_DIST_VERSION openjdk-11.0.7+10
-ENV SCALA_VERSION 2.13.1
-ENV SBT_VERSION 1.2.8
+ENV JAVA_VERSION 15.0.2_7
+ENV JAVA_DIST_VERSION jdk-15.0.2+7
+ENV SCALA_VERSION 2.13.4
+ENV SBT_VERSION 1.4.6
 ENV LIBRARY_PATH /usr/lib
 ENV LD_LIBRARY_PATH /usr/lib
 ENV CC gcc
@@ -57,18 +57,19 @@ RUN \
 RUN \
     echo "installing openjdk ${JAVA_DIST_VERSION}" && \
     mkdir -p ${JAVA_HOME} && \
-    wget -O - -o /dev/null "https://github.com/AdoptOpenJDK/openjdk11-upstream-binaries/releases/download/jdk-11.0.7+10/OpenJDK11U-jdk_x64_linux_${JAVA_VERSION}.tar.gz" | tar xfz - -C /tmp && \
+    wget -O - -o /dev/null "https://github.com/AdoptOpenJDK/openjdk15-binaries/releases/download/${JAVA_DIST_VERSION}/OpenJDK15U-jdk_x64_linux_hotspot_${JAVA_VERSION}.tar.gz" | tar xfz - -C /tmp && \
     mv /tmp/${JAVA_DIST_VERSION}/* ${JAVA_HOME}/ && \
-    rm -rf /tmp/* && \
-    \
+    rm -rf /tmp/*
+
+RUN \
     echo "installing scala ${SCALA_VERSION}" && \
     mkdir "${SCALA_HOME}" && \
-    wget -O - -o /dev/null "https://downloads.typesafe.com/scala/${SCALA_VERSION}/scala-${SCALA_VERSION}.tgz" | tar xfz - -C "${SCALA_HOME}" --strip-components=1 && \
-    \
+    wget -O - -o /dev/null "https://downloads.typesafe.com/scala/${SCALA_VERSION}/scala-${SCALA_VERSION}.tgz" | tar xfz - -C "${SCALA_HOME}" --strip-components=1
+
+RUN \
     echo "installing sbt ${SBT_VERSION}" && \
     mkdir "${SBT_HOME}" && \
-    wget -O - -o /dev/null "https://sbt-downloads.cdnedge.bluemix.net/releases/v${SBT_VERSION}/sbt-${SBT_VERSION}.tgz" | tar xfz - -C "${SBT_HOME}" --strip-components=1 && \
-    :
+    wget -O - -o /dev/null "https://github.com/sbt/sbt/releases/download/v${SBT_VERSION}/sbt-${SBT_VERSION}.tgz" | tar xfz - -C "${SBT_HOME}" --strip-components=1
 
 COPY sample /tmp/sample
 
