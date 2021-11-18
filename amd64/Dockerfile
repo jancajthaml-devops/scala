@@ -19,11 +19,8 @@ ENV LANG C.UTF-8
 ENV LC_ALL C
 ENV DEBIAN_FRONTEND noninteractive
 ENV APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE no
-ENV JAVA_HOME /usr/local/openjdk-11
-ENV JAVA_VERSION 16.0.2_7
-ENV JAVA_DIST_VERSION jdk-16.0.2+7
-ENV SCALA_VERSION 2.13.6
-ENV SBT_VERSION 1.4.6
+ENV SCALA_VERSION 2.13.4
+ENV SBT_VERSION 1.5.5
 ENV LIBRARY_PATH /usr/lib
 ENV LD_LIBRARY_PATH /usr/lib
 ENV CC gcc
@@ -43,6 +40,8 @@ RUN \
       tar \
       libc6 \
       libc6-dev \
+      openjdk-17-jre \
+      openjdk-17-jdk \
       \
       libzmq5>=4.3~ \
       libzmq3-dev>=4.3~ && \
@@ -51,13 +50,6 @@ RUN \
     apt-get autoremove --yes && \
     rm -rf /var/lib/{apt,dpkg,cache,log}/ && \
     :
-
-RUN \
-    echo "installing openjdk ${JAVA_DIST_VERSION}" && \
-    mkdir -p ${JAVA_HOME} && \
-    wget -O - -o /dev/null "https://github.com/adoptium/temurin16-binaries/releases/download/${JAVA_DIST_VERSION}/OpenJDK16U-jdk_x64_linux_hotspot_${JAVA_VERSION}.tar.gz" | tar xfz - -C /tmp && \
-    mv /tmp/${JAVA_DIST_VERSION}/* ${JAVA_HOME}/ && \
-    rm -rf /tmp/*
 
 RUN \
     echo "installing scala ${SCALA_VERSION}" && \
