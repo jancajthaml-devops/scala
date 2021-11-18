@@ -1,4 +1,4 @@
-# Copyright (c) 2017-2018, Jan Cajthaml <jan.cajthaml@gmail.com>
+# Copyright (c) 2017-2021, Jan Cajthaml <jan.cajthaml@gmail.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,20 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# ---------------------------------------------------------------------------- #
-
-FROM arm64v8/debian:buster-slim
+FROM --platform=linux/arm64/v8 arm64v8/debian:sid-slim
 
 ENV container docker
 ENV LANG C.UTF-8
 ENV LC_ALL C
 ENV DEBIAN_FRONTEND noninteractive
 ENV APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE no
-ENV JAVA_HOME /usr/local/openjdk-11
-ENV JAVA_VERSION 11.0.7_10
-ENV JAVA_DIST_VERSION openjdk-11.0.7+10
-ENV SCALA_VERSION 2.13.1
-ENV SBT_VERSION 1.2.8
+ENV SCALA_VERSION 2.13.4
+ENV SBT_VERSION 1.5.5
 ENV LIBRARY_PATH /usr/lib
 ENV LD_LIBRARY_PATH /usr/lib
 ENV CC gcc
@@ -45,9 +40,11 @@ RUN \
       tar \
       libc6 \
       libc6-dev \
+      openjdk-17-jre \
+      openjdk-17-jdk \
       \
-      libzmq5>=4.2.1~ \
-      libzmq3-dev>=4.2.1~ && \
+      libzmq5>=4.3~ \
+      libzmq3-dev>=4.3~ && \
     \
     apt-get clean autoclean && \
     apt-get autoremove --yes && \
@@ -55,20 +52,14 @@ RUN \
     :
 
 RUN \
-    echo "installing openjdk ${JAVA_DIST_VERSION}" && \
-    mkdir -p ${JAVA_HOME} && \
-    wget -O - -o /dev/null "https://github.com/AdoptOpenJDK/openjdk11-upstream-binaries/releases/download/jdk-11.0.7+10/OpenJDK11U-jdk_aarch64_linux_${JAVA_VERSION}.tar.gz" | tar xfz - -C /tmp && \
-    mv /tmp/${JAVA_DIST_VERSION}/* ${JAVA_HOME}/ && \
-    rm -rf /tmp/* && \
-    \
     echo "installing scala ${SCALA_VERSION}" && \
     mkdir "${SCALA_HOME}" && \
-    wget -O - -o /dev/null "https://downloads.typesafe.com/scala/${SCALA_VERSION}/scala-${SCALA_VERSION}.tgz" | tar xfz - -C "${SCALA_HOME}" --strip-components=1 && \
-    \
+    wget -O - -o /dev/null "https://downloads.typesafe.com/scala/${SCALA_VERSION}/scala-${SCALA_VERSION}.tgz" | tar xfz - -C "${SCALA_HOME}" --strip-components=1
+
+RUN \
     echo "installing sbt ${SBT_VERSION}" && \
     mkdir "${SBT_HOME}" && \
-    wget -O - -o /dev/null "https://sbt-downloads.cdnedge.bluemix.net/releases/v${SBT_VERSION}/sbt-${SBT_VERSION}.tgz" | tar xfz - -C "${SBT_HOME}" --strip-components=1 && \
-    :
+    wget -O - -o /dev/null "https://github.com/sbt/sbt/releases/download/v${SBT_VERSION}/sbt-${SBT_VERSION}.tgz" | tar xfz - -C "${SBT_HOME}" --strip-components=1
 
 COPY sample /tmp/sample
 

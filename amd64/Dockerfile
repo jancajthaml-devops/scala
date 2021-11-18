@@ -1,4 +1,4 @@
-# Copyright (c) 2017-2018, Jan Cajthaml <jan.cajthaml@gmail.com>
+# Copyright (c) 2017-2021, Jan Cajthaml <jan.cajthaml@gmail.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,9 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# ---------------------------------------------------------------------------- #
-
-FROM amd64/debian:buster-slim
+FROM --platform=linux/amd64 amd64/debian:sid-slim
 
 ENV container docker
 ENV LANG C.UTF-8
@@ -46,8 +44,8 @@ RUN \
       libc6 \
       libc6-dev \
       \
-      libzmq5>=4.2.1~ \
-      libzmq3-dev>=4.2.1~ && \
+      libzmq5>=4.3~ \
+      libzmq3-dev>=4.3~ && \
     \
     apt-get clean autoclean && \
     apt-get autoremove --yes && \
